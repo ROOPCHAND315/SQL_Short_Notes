@@ -1,0 +1,810 @@
+1->CREATE DATA BASE QUERY
+create database demo;
+or 
+create database IF NOT EXISTS demo;
+
+2->SELECT DATA BASE QUERY
+ use demo;
+
+3-> SHOW DATA BASE QUERY
+show database;
+
+4->CREATE TABLE QUERY
+
+create table demo_table (
+    id int not null,
+    name varchar(250) not null,
+    location varchar(300)
+);
+
+5->  What Is The SQL Query Used To Create A Table With Same Structure Of Another Table?
+
+CREATE TABLE department_copy as (SELECT * FROM department WHERE 1=2);
+
+6->  What Is The SQL Query Used To Create A Table With Same Structure With Data Of Another Table ?
+
+CREATE TABLE Emp SELECT * FROM Employee;
+
+7-> What Is The SQL Query Used To Find The 2nd /3rd / nth Highest Salary by (nested)? 
+
+SELECT MAX(Salary) FROM Employee
+WHERE Salary<(SELECT MAX(Salary) FROM Employee
+WHERE Salary<(SELECT MAX(Salary) FROM Employee));
+
+8->What Is The SQL Query Used To Find The 2nd /3rd / nth Highest Salary by (limit)?
+
+SELECT Salary FROM Employee
+ORDER BY Salary DESC LIMIT N-1,1;
+
+9->What Is The SQL Query Used To Find The 2nd /3rd / nth Highest Salary by (limit offset)?
+
+SELECT Salary FROM Employee
+ORDER BY Salary DESC
+LIMIT 1 OFFSET N-1;
+
+10->What Is The SQL Query Used To Find The 2nd /3rd / nth Highest Salary by (DISTINCT)?
+
+SELECT Salary FROM Employee e1
+WHERE (N-1) = (
+    SELECT COUNT(DISTINCT(e2.Salary)) FROM Employee e2
+    WHERE e2.Salary > e1.Salary);
+
+11-> What Is The SQL Query Used To Find The Names Of The Employees That Begin With ‘A’?
+
+SELECT Name FROM Employee WHERE Name LIKE 'A%';
+
+12->To Find Names Starting From Multiple Characters
+
+SELECT Name FROM Employee 
+WHERE Name LIKE 'A%’  OR Name LIKE 'N%’;
+
+13->What Is The SQL Query Used To Display The Current Date?
+
+SELECT CURRENT_DATE;
+SELECT CURRENT_DATE();
+SELECT CURDATE();
+SELECT DATE(NOW());  # 2024-03-08 15:55:09 ->Date ->2024-03-08
+SELECT DATE(CURRENT_TIMESTAMP());  # 2024-03-08 15:55:09 ->Date ->2024-03-08
+
+14(i)-> What Is The SQL Query Used To Fetch AlternateRecords From A Table?
+
+To Fetch The Even Number Records:-
+
+     SELECT * FROM Employee WHERE id%2=0;
+
+To Fetch The Odd Number Records:-
+
+     SELECT * FROM Employee WHERE id%2=1;
+    
+15->What Is The SQL Query Used To Fetch The Common Records From Two Tables?
+
+SELECT * FROM Employee INNER JOIN Emp ON Employee.ID = Emp.ID;
+
+16-> What Is The SQL Query Used To Find Duplicate Rows In Table?
+
+#Get Duplicate Rows of given column;
+SELECT column, COUNT(column)  
+FROM table_name  
+GROUP BY column  
+HAVING COUNT(column) > 1;  
+
+#Get Duplicate Name;
+SELECT name, COUNT(*)  
+FROM EMPLOYEE  
+GROUP BY name  
+HAVING COUNT(name) > 1;  
+
+#Get Duplicate Salary;
+SELECT salary, COUNT(*)  
+FROM EMPLOYEE  
+GROUP BY salary  
+HAVING COUNT(*) > 1;  
+
+17-> What Is The SQL Query Used To Remove The Duplicate Rows In Table?
+
+DELETE E1 FROM EMPLOYEE E1
+INNER JOIN EMPLOYEE E2 
+WHERE E1.id < E2.id AND E1.Name = E2.Name;
+   
+   or
+
+delete t1 from teacher t1 inner join teacher t2 where t1.sid < t2.sid and t1.tsalary=t2.tsalary;
+
+18-> What Is The SQL Query Used To Find The nth Record From A Table?
+
+Syntax :  SELECT * FROM <table_name> LIMIT  N-1,1;
+Example : SELECT * FROM Employee LIMIT 0,1
+Syntax :  SELECT * FROM <table_name> LIMIT 1 OFFSET N-1; 
+Example :  SELECT * FROM Employee  LIMIT 1 OFFSET 10;
+
+19->What Is The SQL Query Used To Find The First 5 Records From A Table?
+
+SELECT * FROM Employee LIMIT 5;   
+  or  
+SELECT * FROM Employee ORDER BY ID LIMIT 5;
+
+20->What Is The SQL Query Used To Find The Last 5 Records From A Table?
+
+(SELECT * FROM Employee 
+ORDER BY ID DESC LIMIT 5) 
+ORDER BY ID ASC;
+
+
+SELECT * FROM Employee 
+WHERE ID > (SELECT MAX(ID) - 5 
+FROM Employee);
+
+
+SELECT * FROM Employee 
+WHERE ID > (SELECT COUNT(*) 
+FROM Employee) - 5;
+
+21->What Is The SQL Query Used To Find The First Or Last Record From A Table?
+a)To Find First Record:-
+
+SELECT *  FROM employee  LIMIT 1;
+   or
+SELECT * FROM Employee 
+WHERE ID=(SELECT min(ID) FROM Employee);
+
+b)To Find Last Record:-
+
+SELECT *  FROM Employee ORDER BY ID desc LIMIT 1;
+   or
+SELECT * FROM Employee
+WHERE ID=(SELECT max(ID) FROM employee);
+
+22->What Is The SQL Query Used To Find The Distinct Records Without Using Distinct Keyword?
+a)USING DISTINCT KEYWORD:
+
+SELECT DISTINCT dept_id FROM Employee;
+
+b)USING GROUP BY:
+
+SELECT dept_id FROM Employee GROUP BY dept_id;
+  or
+SELECT salary FROM  Employee GROUP BY salary;
+
+c)USING SET UNION OPERATOR:
+
+SELECT dept_id FROM Employee 
+UNION 
+SELECT dept_id FROM Employee;
+    or
+SELECT salary FROM Employee
+UNION
+SELECT salary FROM Employee;
+
+23->How Will You Change The Datatype Of A Column?
+
+ALTER TABLE [table_name] MODIFY [column_name] [new_data_type];
+
+The syntax shows that we are using ALTER TABLE statement.
+Change datatype of a column using MODIFY
+
+For Example:
+     ALTER TABLE Employee MODIFY manager_id BIGINT;
+
+24->What Is The Difference Between Unique Key,Primary key And Foreign key?
+
+UNIQUE KEY:
+
+The role of the Unique key is to make sure that each column and row are unique.
+The Unique key cannot accept the duplicate values.
+It can accept a null value but only one null value per column. 
+It ensures the integrity of the column or group of columns to store different values into a table
+
+Syntax: UNIQUE constraint on single column
+
+CREATE TABLE Employee(
+    ID int NOT NULL,
+    Name varchar(255) NOT NULL,
+    Department varchar(255),
+    Salary int,
+    UNIQUE  (ID));
+
+Syntax: UNIQUE constraint on multiple columns
+
+CREATE TABLE Employee (
+    ID int NOT NULL,
+    Name varchar(255) NOT NULL,
+    Department varchar(255),
+    Salary int,
+    CONSTRAINT UC_Employee UNIQUE (ID, Name));
+
+PRIMARY KEY:
+
+A Primary key is used to uniquely identify all table records. 
+You can consider Primary Key constraint to be a combination of UNIQUE and NOT NULL constraint.
+i.e Primary Key = UNIQUE + NOT NULL
+This means that if a column is set as a primary key, then this particular column cannot have any null values present in it and also all the values present in this column must be unique.
+A table can have only one primary key that consists of single or multiple fields.
+
+Syntax: PRIMARY constraint on single column
+
+CREATE TABLE Employee(
+    ID int NOT NULL,
+    Name varchar(255) NOT NULL,
+    Department varchar(255),
+    Salary int,
+    PRIMARY KEY (ID));
+
+Syntax: PRIMARY constraint on multiple columns
+
+CREATE TABLE Employee (
+    ID int NOT NULL,
+    Name varchar(255) NOT NULL,
+    Department varchar(255),
+    Salary int,
+    CONSTRAINT PK_Employee PRIMARY KEY (ID, Name));
+
+FOREIGN KEY:
+
+The foreign key is used to link one or more tables together. It is also known as the Referencing Key.
+A Foreign key is specified as a key that is related to the primary key of another table. It means a foreign key field in one table refers to the primary key field of the other table.
+A Foreign key is a field that can uniquely identify each row in another table.
+The primary key-foreign key relationship is a very crucial relationship as it maintains the ACID properties of the database sometimes. 
+
+Syntax:
+
+CREATE TABLE Employee (
+    ID int NOT NULL,
+    Name varchar(255) NOT NULL,
+    Dept_ID int,
+    Salary int,
+    PRIMARY KEY (ID),
+    FOREIGN KEY (Dept_ID) REFERENCES Department(ID));
+
+25->What Is A Join? List Different Types Of Joins.     
+There are 4 types of JOINS, Which are:-:
+
+INNER JOIN
+CROSS JOIN
+SELF JOIN
+OUTER JOIN (LEFT, RIGHT, FULL)
+
+INNER JOIN:  
+
+Inner Join basically returns records that have matching values in both tables.
+Syntax:
+SELECT * FROM Table_A INNER JOIN Table_B;
+
+CROSS JOIN:  
+
+Cross join can be defined as a cartesian product of the two tables included in the join. 
+It returns rows combining each row from the first table with each row of the second table. 
+For Example - If we join two tables having 10 and 15 columns the Cartesian product of two tables will be 10×15=150 rows.
+
+Syntax:
+SELECT a.name, d.name FROM EMPLOYEE AS a
+CROSS JOIN DEPARTMENT as d;
+
+SELF JOIN:  
+
+A SELF JOIN is used to join a table with itself. 
+This join can be performed using table aliases, which allow us to avoid repeating the same table name in a single sentence.
+It will throw an error if we use the same table name more than once in a single query without using table aliases. 
+A SELF JOIN is required when we want to combine data with other data in the same table itself.
+
+Syntax:
+SELECT column_lists
+FROM TABLE1 AS T1, TABLE1 AS T2    
+WHERE join_conditions;    
+
+
+SELECT A.id AS "Emp_ID",A.name AS "Employee Name",
+B.manager_id AS "Manager_ID",B.name AS "Manager Name"
+FROM Employee A, Employee B
+WHERE A.id = B.manager_id;
+
+OUTER JOIN:   There are 3 types of Outer Joins.
+
+
+LEFT OUTER JOIN:   
+
+Left join return rows which are common between the tables and all rows of Left hand side table. Simply, it returns all the rows from Left hand side table even though there are no matches in the Right hand side table.
+
+SELECT * FROM Table_A A LEFT JOIN Table_B B ON A.col = B.col;
+
+RIGHT OUTER JOIN:   
+
+Left join return rows which are common between the tables and all rows of Left hand side table. Simply, it returns all the rows from Left hand side table even though there are no matches in the Right hand side table.
+
+SELECT * FROM Table_A A RIGHT JOIN Table_B B ON A.col = B.col;
+
+FULL OUTER JOIN:   
+
+Left join return rows which are common between the tables and all rows of Left hand side table. Simply, it returns all the rows from Left hand side table even though there are no matches in the Right hand side table.
+
+SELECT * FROM Table_A A FULL JOIN Table_B B ON A.col = B.col;
+
+26->What Are ‘TRUNCATE’, ‘DELETE’ And ‘DROP’ Statements In SQL?
+
+‘DELETE’ Statement:   
+
+DELETE removes some or all rows from a table based on the condition. 
+It can be rolled back.
+
+Example:
+	DELETE FROM Emp
+	WHERE id > 10;
+
+The Delete statement removes single or multiple rows from an existing table depending on the specified condition.
+DELETE is a DML command.
+We can use the WHERE clause in the DELETE command.
+DELETE is used to delete a row from a table.
+DELETE statement is slower because it maintained the log.
+You can roll back data after using the DELETE.
+DELETE query takes more space.
+
+
+‘TRUNCATE’ Statement:   
+
+TRUNCATE command is used to delete all the rows from the table and free the space containing the table. 
+Truncate operation cannot be rolled back.
+
+Example:
+	TRUNCATE TABLE emp;
+
+More 
+The Truncate command deletes the whole contents of an existing table without the table itself.
+It preserves the table structure or schema.
+
+TRUNCATE is a DML command.
+We cannot use the WHERE clause with TRUNCATE.
+TRUNCATE is used to remove all the rows from a table.
+TRUNCATE is faster than DELETE as it deletes entire data at a time without maintaining transaction logs.
+It is not possible to roll back after using the TRUNCATE.
+TRUNCATE query occupies less space.
+
+‘DROP’ Statement:   
+
+DROP command is used to remove an object from the database.
+If you drop a table, all the rows in the table are deleted and the table structure is removed from the database.  
+It also cannot be retrieved back.
+
+Example:
+	DROP TABLE emp;  
+
+27->What Is An ‘Alias’ In SQL?
+
+ALIAS:   
+
+This command provides another name to a table or a column. 
+It can be used in WHERE clause of a SQL query using the “AS” keyword. 
+Aliases are created to make table or column names more readable.
+The renaming is just a temporary change and the table name does not change in the original database.
+Aliases are useful when table or column names are big or not very readable.
+
+Example: 
+
+SELECT e.name AS "Employee Name", 
+d.name AS "Department Name", 
+e.salary AS "Monthly Salary", 
+e.hiredate AS "Date Of Joining" 
+FROM Employee AS e
+LEFT OUTER JOIN Department d 
+on e.dept_id = d.id;
+
+28->What Are Constraints In SQL?
+
+CONSTRAINTS:   
+
+Constraints are used to specify the rules that we can apply to the type of data in a table. That is, we can specify the limit on the type of data that can be stored in a particular column in a table using constraints.
+It can be applied for single or multiple fields in an SQL table during the creation of the table or after creating using the ALTER TABLE command.
+It enforces us to store valid data and prevents us from storing irrelevant data. 
+
+SQL categories the constraints into two levels:
+
+Column Level Constraints: These constraints are only applied to a single column and limit the type of data that can be stored in that column.
+Table Level Constraints: These constraints are applied to the entire table and limit the type of data that can be entered.
+
+The following are the constraints in SQL:
+
+NOT NULL - Restricts NULL value from being inserted into a column.
+CHECK - Verifies that all values in a field satisfy a condition.
+DEFAULT - Automatically assigns a default value if no value has been specified for the field.
+INDEX - Indexes a field providing faster retrieval of records.
+UNIQUE - Ensures unique values to be inserted into the field.
+PRIMARY - Uniquely identifies each record in a table.
+FOREIGN - Ensures referential integrity for a record in another table.
+
+29-> What Is The Difference Between ‘IN’ And ‘BETWEEN’ Operators In SQL?
+
+BETWEEN operator is used to display rows based on a range of values in a row whereas IN condition operator is used to check for values contained in a specific set of values.
+
+Example of BETWEEN:
+
+SELECT * FROM employee 
+WHERE salary 
+BETWEEN 25000 and 35000;
+
+(Note: Both Values will be included)
+
+Example of IN:
+
+SELECT * FROM employee 
+WHERE salary 
+IN(23000,25000,26000,30000);
+
+30->What Is The Default Ordering Of Data Using The ORDER BY Clause? How Could It Be Changed?
+
+ORDER BY: 
+  
+The ORDER BY clause is used to sort the table data either in ascending or descending order. 
+By default ORDER BY sorts the data in ASCENDING ORDER.
+If we want to change its default behavior, we need to use the DESC keyword after the column name in the ORDER BY clause.
+
+Syntax:
+
+SELECT expressions FROM tables     
+ORDER BY expression [ASC | DESC];    
+
+Example:
+
+SELECT name, salary FROM EMPLOYEE 
+ORDER BY SALARY ASC;
+
+SELECT name, salary FROM EMPLOYEE 
+ORDER BY SALARY DESC;
+
+31->What Is DISTINCT Statement?
+
+DISTINCT: 
+  
+The DISTINCT keyword is used to ensure that the fetched value always has unique values. 
+It does not allow to have duplicate values. 
+The DISTINCT keyword is used with the SELECT statement and retrieves different values from the table's column. 
+
+Syntax:
+
+SELECT DISTINCT column FROM table;
+
+Example:
+
+SELECT DISTINCT dept_id FROM Employee;
+
+32->What Are Aggregate Functions. How many Aggregate Functions Are Available In SQL?
+
+AGGREGATE FUNCTIONS: 
+  
+Aggregate functions are used to evaluate mathematical calculation and return single values. 
+Aggregate functions are often used with the GROUP BY and HAVING clauses of the SELECT statement. 
+This can be calculated from the columns in a table. 
+
+SQL provides Five(5) aggregate functions:
+
+COUNT(): returns the number of table rows, including rows with null values.
+	SELECT COUNT(*) FROM Employee;
+
+AVG(): returns the average value from specified columns.
+	SELECT AVG(salary) FROM Employee;
+
+MAX(): returns the largest value among the group.
+	SELECT MAX(salary) FROM Employee;
+
+MIN(): returns the smallest value among the group.
+	SELECT MIN(salary) FROM Employee;
+
+SUM(): returns the total summed values(non-null) of the specified column.
+	SELECT SUM(salary) FROM Employee;
+
+33->What Are The Subsets Of SQL?  
+
+DDL (Data Definition Language): 
+DDL defines the data structure. 
+DDL deals with database schemas and descriptions of how the data should reside in the database.
+DDL Commands: CREATE, ALTER, DROP, TRUNCATE, COMMENT, RENAME
+
+DML (Data Manipulation Language): 
+DML is used to store, modify, retrieve, delete and update data in a database.
+DML deals with data manipulation of existing data in the database. 
+DML Commands:  SELECT, INSERT, UPDATE, DELETE
+
+DCL (Data Control Language): 
+DCL controls access to the data stored in the database. 
+DCL mostly concerned with rights, permissions and other controls of the database system.
+DCL Commands:  GRANT, REVOKE
+
+TCL (Transaction Control Language): 
+TCL is used to deal with the transaction operations in the database. 
+TCL Commands: COMMIT, ROLLBACK, SAVEPOINT, SET TRANSACTION
+
+34->List Different Types Of Relationships In SQL?
+
+Database Relationship: 
+
+Database Relationship is defined as the connection between the tables in a database. 
+Following are the relationships in SQL.
+
+One-to-One relationship - This can be defined as the relationship between two tables where each record in one table is associated with the maximum of one record in the other table.
+
+One-to-Many & Many-to-One relationships - This is the most commonly used relationship where a record in a table is associated with multiple records in the other table.
+
+Many-to-Many relationship- This is used in cases when multiple instances on both sides are needed for defining a relationship.
+
+Self-Referencing Relationships - This is used when a table needs to define a relationship with itself.
+
+35->What Is A SUB-QUERY? What Are Its Types?
+
+SUB-QUERY: 
+
+A Subquery can be simply defined as a query within another query. 
+
+The outer query is called as MAIN QUERY, and inner query is called SUB-QUERY.
+
+SubQuery is always executed first, and the result of subquery is passed on to the main query.
+
+A subquery can also use any comparison operators such as >,< or =.
+
+For example:
+
+SELECT MAX(salary) FROM Employee
+WHERE Salary<(SELECT MAX(Salary) FROM Employee
+WHERE Salary<(SELECT MAX(Salary) FROM  Employee));
+
+Types Of SUB-QUERY: 
+
+There are two types of subquery – Correlated and Non-Correlated.
+Correlated Subquery - A correlated subquery cannot be considered as independent query, but it can refer the column in a table listed in the FROM the list of the main query.
+Non-Correlated Subquery - It can be considered as independent query and the output of subquery are substituted in the main query.
+
+36-> What Is A Self-Join. What Is Its Requirement. 
+
+SELF JOIN:  
+
+A SELF JOIN is used to join a table with itself. 
+This join can be performed using table aliases, which allow us to avoid repeating the same table name in a single sentence.
+It will throw an error if we use the same table name more than once in a single query without using table aliases. 
+A SELF JOIN is required when we want to combine data with other data in the same table itself.
+
+Syntax:
+SELECT column_lists
+FROM TABLE1 AS T1, TABLE1 AS T2    
+WHERE join_conditions;    
+
+SELECT A.id AS "Emp_ID",A.name AS "Employee Name",
+B.manager_id AS "Manager_ID",B.name AS "Manager Name"
+FROM Employee A, Employee B
+WHERE A.id = B.manager_id;
+
+37->What Is The Difference Between NOW() And CURRENT_DATE()?
+
+NOW() Command will fetch the current date and time both in format ‘YYYY-MM-DD HH:MM:SS’ 
+
+	SELECT NOW();
+
+CURRENT_DATE() Command will fetch the date of the current day in format ‘YYYY-MM-DD’. 
+
+	SELECT CURRENT_DATE();
+
+38-> Which Function Is Used To Return Remainder In A Division Operator In SQL?
+
+The MOD function returns the remainder in a division operation.
+Example:
+	
+	SELECT MOD(27,5) AS “Value”;
+
+39->What Are Scalar Functions?
+ 
+Scalar functions are the built-in functions in SQL, and whatever be the input provided to the scalar functions, the output returned by these functions will always be a single value.
+
+Following are the widely used SQL scalar functions:
+
+LENGTH() - Calculates the total length of the given field (column).
+	SELECT name, LENGTH(name) FROM Department;
+UCASE() - Converts a collection of string values to uppercase characters.
+	SELECT UCASE(name) FROM Department;
+LCASE() - Converts a collection of string values to lowercase characters.
+	SELECT LCASE(name) FROM Department;
+MID() - Extracts substrings from a collection of string values in a table.
+	SELECT MID(name,2,4) FROM Department;
+ROUND() - Calculates the round-off integer value for a numeric field (or decimal point values).
+	SELECT Round(26.837352835283528,4) as Value;
+NOW() - Returns the current date & time.
+	SELECT NOW() AS Today;
+CONCAT() - Concatenates two or more strings.
+	SELECT CONCAT(id, name, location) FROM Department;
+RAND() - Generates a random collection of numbers of a given length.
+FORMAT() - Sets the format to display a collection of values. 
+
+40-> What Is The Difference Between SQL And MySQL?
+
+SQL
+It is  a structured query language used in a database
+It is used for query and operating database system
+SQL is always the same
+Only a single storage engine is supported in SQL.
+The server is independent in SQL
+SQL is a standard language which stands for Structured Query Language based on the English language
+SQL is the core of the relational database which is used for accessing and managing database
+SQL is a programming language, so that it does not get any updates. Its commands are always fixed and remain the same.
+
+ MySQL
+It is a database management  system
+It allows data handling, storing, and modifying data in an organized manner.
+MySQL keeps updating
+MySQL supports multiple storage engines.
+During backup sessions, the server blocks the database.
+MySQL is a database management system.
+MySQL is an RDMS (Relational Database Management System) such as SQL Server, Informix etc.
+MySQL is software, so it gets frequent updation.
+
+41->Is A Blank Space or Zero Same As A NULL Value?
+
+No. The NULL value is not the same as zero or a blank space. 
+The following points explain their main differences:
+
+A NULL value is a value, which is 'unavailable, unassigned, unknown or not applicable.' It would be used in the absence of any value. 
+We can perform arithmetic operations on it. 
+On the other hand, zero is a number, and a blank space is treated as a character.
+
+In SQL, zero or blank space can be compared with another zero or blank space. 
+whereas one null may not be equal to another null. null means data might not be provided or there is no data.
+
+42->What Is Union, Union ALL, Minus And Intersect?
+
+UNION:  
+The UNION operator combines the results of two or more Select statements by removing duplicate rows. The columns and the data types must be the same in the SELECT statements.
+SELECT columns FROM table1   UNION   SELECT columns FROM table2;    
+
+UNION ALL:
+This operator is similar to the Union operator, but it does not remove the duplicate rows from the output of the SELECT statements. 
+SELECT columns FROM table1   UNION ALL   SELECT columns FROM table2;    
+
+INTERSECT:
+This operator returns the common records from two or more SELECT statements. 
+SELECT columns FROM table1   INTERSECT   SELECT columns FROM table2;     
+
+MINUS: 
+This operator returns the records from the first query, which is not found in the second query. It does not return duplicate values. 
+SELECT columns FROM table1   MINUS   SELECT columns FROM table2;    
+
+Before running either of the above SQL statements, certain requirements must be satisfied –
+Within the clause, each SELECT query must have the same amount of columns.
+The data types in the columns must also be comparable.
+In each SELECT statement, the columns must be in the same order
+
+43->What Are The ACID Properties In A Database?
+
+ACID PROPERTIES: 
+ 
+The ACID properties are meant for the transaction that goes through a different group of tasks. 
+A transaction is a single logical order of data. 
+It provides properties to maintain consistency before and after the transaction in a database. 
+It also ensures that the data transactions are processed reliably in a database system.
+
+The ACID property is an acronym for Atomicity, Consistency, Isolation, and Durability.
+
+Atomicity: It ensures that all statements or operations within the transaction unit must be executed successfully. If one part of the transaction fails, the entire transaction fails, and the database state is left unchanged. Its main features are COMMIT, ROLLBACK, and AUTO-COMMIT.
+
+Consistency: This property ensures that the data must meet all validation rules. In simple words, we can say that the database changes state only when a transaction will be committed successfully. It also protects data from crashes.
+
+Isolation: This property guarantees that the concurrent property of execution in the transaction unit must be operated independently. It also ensures that statements are transparent to each other. The main goal of providing isolation is to control concurrency in a database.
+
+Durability: This property guarantees that once a transaction has been committed, it persists permanently even if the system crashes, power loss, or failed.
+
+44->What Is Normalization? What Are The Various Forms Of Normalization?
+
+NORMALIZATION: 
+ 
+Generally, in a table, we will have a lot of redundant information which is not required, so it is better to divide this complex table into multiple smaller tables which contains only unique information.
+
+The process of table design to minimize the data redundancy is called normalization. 
+
+In other words, Normalization in SQL is the process of organizing data to avoid duplication and redundancy. 
+
+It includes the creation of tables, establishing relationships between them, and defining rules for those relationships.
+
+The main aim of Normalization is to add, delete or modify field that can be made in a single table.
+
+Some of the advantages are:
+
+Reduction of redundant and duplicate data
+Quickly find the information
+More Tables with smaller rows
+Better Database organization
+
+VARIOUS FORMS OF NORMALIZATION: 
+
+There are many successive levels of normalization. These are called Normal Forms. 
+Each consecutive normal form depends on the previous one.
+
+FIRST NORMAL FORM (1NF):
+A relation schema is in 1NF, if and only if:
+All attributes in the relation are atomic(indivisible value)
+And there are no repeating elements or group of elements.
+
+SECOND NORMAL FORM (2NF):
+A relation is said to be in 2NF, if and only if:
+It is in 1NF.
+And creates & places data subsets in an individual table and defines relationship between tables using primary key.
+
+THIRD NORMAL FORM (3NF):
+A relation is said to be in 3NF if and only if:
+It is in 2NF.
+And removes those columns which are not related through the primary key.
+
+FOURTH NORMAL FORM (4NF):
+Meeting all the requirements of 3NF and does not define multi-valued dependencies. 
+4NF is also known as BCNF.
+
+45->What Is Denormalization?
+
+DENORMALIZATION:
+
+Denormalization is the inverse process of normalization, where the normalized schema is converted into a schema that has redundant information. 
+
+Denormalization is a technique used to access the data from higher to lower normal forms of database.
+
+The performance is improved by using redundancy and keeping the redundant data consistent. 
+
+The reason for performing denormalization is the overheads produced in the query processor by an over-normalized structure.
+
+Denormalization doesn't mean that normalization will not be done. It is an optimization strategy that takes place after the normalization process.
+
+It adds redundant terms into the tables to avoid complex joins and many other complex operations.
+
+46-> What Is An Index? Explain Different Types Of Indexes In SQL?
+
+A database index is a data structure that provides a quick lookup of data in a column or columns of a table.
+An index creates an entry for each value and hence it will be faster to retrieve data.
+It also has a unique value meaning that the index cannot be duplicated. 
+It is used to increase the performance and allow faster retrieval of records from the table.
+Indexes help speed up searching in the database. 
+If there is no index on any column in the WHERE clause, then SQL Server has to skim through the entire table and check each and every row to find matches, which might result in slow operation on large data.
+Syntax:
+CREATE INDEX INDEX_NAME ON TABLE_NAME (COLUMN)
+
+
+DIFFERENT TYPES OF INDEX: 
+Clustered Index
+Non-Clustered Index
+
+ Clustered Index
+A clustered index is a table or view where the data for the rows are stored. In a relational database, if the table column contains a primary key, MySQL automatically creates a clustered index named PRIMARY.
+Clustered indexes store the data information and the data itself.
+There can only be one clustered index per table.
+A clustered index determines how data is stored physically in the table. Therefore, reading from a clustered index is faster.
+A clustered index always contains an index id of 0.
+
+ Non-Clustered Index
+The indexes other than PRIMARY indexes (clustered indexes) are called non-clustered indexes. It has a structure separate from the data row. The non-clustered indexes are also known as secondary indexes.
+Non-clustered indexes stores only the information, and then it will refer you to the data stored in clustered data.
+There can be one or more non-clustered indexes in a table.
+It creates a logical ordering of data rows and uses pointers for accessing the physical data files. Therefore, reading from a clustered index is slower.
+A non-clustered index always contains an index id>0.
+
+47-> What Is A View In Database?
+
+DATABASE VIEW:
+
+A view in SQL is a virtual table based on the result-set of SQL statement. 
+A view contains rows and columns, just like a real table. 
+The fields in a view are fields from one or more real tables in the database.
+View can have data of one or more tables combined, and it is depending on the relationship.
+If any changes occur in the existing table, the same changes reflected in the views also.
+
+48-> What Are The Difference Between OLAP And OLTP?
+
+ OLAP (ONLINE ANALYTICAL PROCESSING)
+It Consists of historical data from various Databases.
+It is subject oriented. Used for Data Mining, Analytics, Decision making,etc.
+The data is used in planning, problem solving and decision making.
+It reveals a snapshot of present business tasks.
+Large amount of data is stored typically in TB, PB
+Relatively slow as the amount of data involved is large. Queries may take hours.
+It only need backup from time to time as compared to OLTP
+This data is generally managed by CEO, MD, GM.
+Only read and rarely write operation.
+
+ OLTP (ONLINE TRANSACTION PROCESSING)
+It Consists only operational current data.
+It is application oriented. Used for business tasks.
+The data is used to perform day to day fundamental operations.
+It provides a multi-dimensional view of different business tasks.
+The size of the data is relatively small as the historical data is archived. For ex MB, GB
+Very Fast as the queries operate on 5% of the data.
+Backup and recovery process is maintained religiously
+This data is managed by clerks, managers.
+Both read and write operations.
